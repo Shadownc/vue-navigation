@@ -87,8 +87,8 @@ export default {
         try {
           const response = await axios.get(`/api/nav?keyword=${query}`)
           const data = response.data
-          if (data && Array.isArray(data.data)) {
-            const finalData = data.data.map(item => {item.value = item.name; return item})
+          if (data && data.code === 1 && data.data && Array.isArray(data.data.data)) {
+            const finalData = data.data.data.map(item => {item.value = item.name; return item})
             cb(finalData)
           } else {
             cb([])

@@ -73,11 +73,11 @@ export default {
   computed: {
     contentMarginLeft() {
       if (this.showMenuType === 'half') {
-        return '70px'
+        return '60px'
       } else if (this.showMenuType === 'all') {
         return '220px'
       } else {
-        return 0
+        return '0'
       }
     }
   },
@@ -163,10 +163,13 @@ export default {
 <style lang="scss" scoped>
 .el-container {
   flex-direction: column;
+  height: 100%;
 }
 
 .user-layout {
   position: relative;
+  height: 100vh;
+  overflow: hidden;
   .footer {
     position: fixed;
     left: 200px;
@@ -182,7 +185,11 @@ export default {
 
   .body {
     margin-left: 0;
-    transition: margin-left 0.3s;
+    transition: margin-left 0.2s ease-out;
+    will-change: margin-left;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
   }
 }
 
@@ -210,6 +217,10 @@ body {
   padding: 25px 30px;
   background-color: #f8f9fa;
   background-image: linear-gradient(to bottom, #f5f7ff 0%, #f8f9fa 100%);
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  will-change: transform;
+  overscroll-behavior: contain;
 }
 
 .website-title {
@@ -249,6 +260,8 @@ body {
 .website-wrapper {
   margin-bottom: 40px;
   animation: fadeIn 0.5s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   
   &:first-child {
     .website-title {

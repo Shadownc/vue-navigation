@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-detail-page">
+  <div class="nav-detail-page page-scroll-container">
     <!-- Header -->
     <div class="page-header">
       <div class="container header-container">
@@ -162,13 +162,14 @@
                   :key="item._id" 
                   :to="`/nav/${item._id}`" 
                   class="related-item"
+                  :title="item.name"
                 >
                   <div class="related-logo">
                     <img :src="item.logo" :alt="item.name">
                   </div>
                   <div class="related-content">
-                    <div class="related-name">{{ item.name }}</div>
-                    <div class="related-desc">{{ item.desc }}</div>
+                    <div class="related-name" :title="item.name">{{ item.name }}</div>
+                    <div class="related-desc" :title="item.desc">{{ item.desc }}</div>
                   </div>
                 </router-link>
               </div>
@@ -191,6 +192,17 @@ export default {
       randomNavList: [],
       loading: true,
       isStar: false
+    }
+  },
+  watch: {
+    // 监听路由参数变化，当ID变化时重新获取详情
+    '$route.params.id': {
+      handler(newId) {
+        this.getNavDetail(newId);
+        this.isStar = false;
+        window.scrollTo(0, 0);
+      },
+      immediate: false
     }
   },
   methods: {
@@ -261,6 +273,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.nav-detail-page {
+  height: 100vh;
+  overflow-y: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 // Variables
 $color-primary: var(--color-primary, #4700f1);
 $color-primary-dark: #3600c5;

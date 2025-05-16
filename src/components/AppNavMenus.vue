@@ -6,12 +6,10 @@
   >
     <router-link class="title" to="/">
       <img
-        v-show="!isCollapse"
         class="icon-logo"
-        width="180"
-        src="/logo-nav.png"
+        width="45"
+        src="/logo-nav-icon.png"
       />
-      <img v-show="isCollapse" class="icon-logo" width="45" src="/logo-nav-icon.png"/>
     </router-link>
 
     <el-row>
@@ -94,11 +92,11 @@ export default {
   computed: {
     sideBarWidth() {
       if (this.showMenuType == 'half') {
-        return '70px'
+        return '60px'
       } else if (this.showMenuType == 'all') {
         return '220px'
       } else {
-        return 0
+        return '0'
       }
     },
     isCollapse() {
@@ -160,6 +158,13 @@ $sidebar-w: auto;
     height: 100vh;
     overflow-y: auto;
     padding-bottom: 100px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba($color-primary, .2) $color-primary;
+    -webkit-overflow-scrolling: touch;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
   }
   .el-menu--popup::-webkit-scrollbar,
   .el-menu-vertical-demo.el-menu::-webkit-scrollbar {
@@ -187,13 +192,17 @@ $sidebar-w: auto;
   background-color: $color-primary;
   color: #6b7386;
   text-align: center;
-  transition: all 0.5s;
+  transition: width 0.2s ease-out;
   z-index: 99;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   overflow: hidden;
+  will-change: width;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
   .el-submenu__title i {
     color: #fff;
   }
@@ -202,6 +211,7 @@ $sidebar-w: auto;
   :deep(.el-menu),
   :deep(.el-menu--collapse) {
     border: 0;
+    transition: width 0.2s ease-out;
   }
 
   &.aside-hide {
@@ -214,23 +224,51 @@ $sidebar-w: auto;
 
   .title {
     font-size: 16px;
-    padding: 20px 0;
+    padding: 15px 0;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    
+    .icon-logo {
+      max-width: 100%;
+      height: auto;
+      transition: all 0.3s;
+    }
   }
 
   .el-submenu__title,
   .el-menu-item {
     text-align: left;
   }
+
+  :deep(.el-menu-item), :deep(.el-submenu__title) {
+    transition: none !important;
+  }
+
+  :deep(.el-submenu__icon-arrow) {
+    transition: transform 0.2s ease-out !important;
+  }
+
+  :deep(.el-menu--collapse .el-submenu__title) span,
+  :deep(.el-menu--collapse .el-submenu__title) i.el-submenu__icon-arrow {
+    display: none;
+  }
+  
+  :deep(.el-menu--collapse) {
+    width: 60px !important;
+  }
+
+  :deep(.el-menu) {
+    width: 220px;
+    transition: all 0.2s ease-out;
+  }
 }
 
 @media screen and (max-width: 568px) {
   .el-aside {
-    width: 0;
+    width: 0 !important;
   }
 
   .app-search,
@@ -240,7 +278,7 @@ $sidebar-w: auto;
 }
 @media screen and (min-width: 569px) {
   .el-aside {
-    width: 70px;
+    width: 60px;
   }
 }
 </style> 

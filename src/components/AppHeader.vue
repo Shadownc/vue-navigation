@@ -50,6 +50,7 @@ export default {
   top: 0;
   z-index: 10;
   box-shadow: 0px 1px 6px rgba(#000, .1);
+  height: 60px;
 
   .arrow {
     flex: 1;
