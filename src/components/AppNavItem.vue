@@ -90,6 +90,7 @@ export default {
 
 <style lang="scss" scoped>
 $color-primary: #4700f1; // Define the variable directly
+$transition-speed: 0.3s;
 
 .website-item {
   font-size: 12px;
@@ -97,14 +98,15 @@ $color-primary: #4700f1; // Define the variable directly
   box-sizing: border-box;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all $transition-speed;
   color: #999;
   position: relative;
   height: 100%;
   
   &:hover {
     .link {
-      display: block;
+      opacity: 1;
+      transform: scale(1);
     }
   }
 
@@ -112,45 +114,70 @@ $color-primary: #4700f1; // Define the variable directly
     position: absolute;
     right: 10px;
     top: 10px;
-    display: none;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all $transition-speed ease;
     z-index: 10;
-    background: rgba(255, 255, 255, 0.9);
-    width: 30px;
-    height: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    
+    i {
+      color: $color-primary;
+      font-size: 16px;
+      transition: transform 0.2s ease;
+    }
+    
+    &:hover i {
+      transform: scale(1.2);
+    }
   }
 
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+    .wrap {
+      border-color: rgba(71, 0, 241, 0.15);
+    }
   }
+  
   .wrap {
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
     background: #fff;
     cursor: pointer;
     height: 100%;
     display: flex;
     flex-direction: column;
+    border: 1px solid transparent;
+    transition: all $transition-speed;
+    position: relative;
+    overflow: hidden;
   }
 
   a {
     color: #999;
+    transition: color 0.2s;
+    &:hover {
+      color: $color-primary;
+    }
   }
 
   .title {
-    color: #4700f1;
-    font-size: 14px;
-    font-weight: 500;
+    color: $color-primary;
+    font-size: 15px;
+    font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 100%;
+    margin-bottom: 2px;
+    letter-spacing: 0.3px;
   }
 
   i {
@@ -161,23 +188,25 @@ $color-primary: #4700f1; // Define the variable directly
   }
 
   .desc {
-    margin-top: 5px;
+    margin-top: 6px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 12px;
     color: #666;
+    line-height: 1.4;
   }
 
   &__footer {
     border-top: 1px solid #f2f2f2;
     background: #fff;
-    padding: 8px 12px;
+    padding: 10px 14px;
     text-align: right;
     display: flex;
-    border-bottom-right-radius: 8px;
-    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 12px;
     margin-top: auto;
+    transition: background-color 0.2s;
     
     .left {
       font-size: 12px;
@@ -194,29 +223,46 @@ $color-primary: #4700f1; // Define the variable directly
       text-align: right;
       
       .website-item__icon {
-        margin-left: 8px;
+        margin-left: 12px;
+        padding: 4px 6px;
+        border-radius: 30px;
+        transition: all 0.2s;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: rgba(71, 0, 241, 0.08);
+          i {
+            transform: scale(1.2);
+          }
+        }
+        
+        i {
+          transition: transform 0.2s;
+          margin-right: 3px;
+        }
       }
     }
   }
   &__icon.active {
     &,
     i {
-      color: #4700f1;
+      color: $color-primary;
+      font-weight: 500;
     }
   }
 }
 
 .info {
   display: block;
-  transition: all 0.3s;
+  transition: all $transition-speed;
   background: #fff;
-  padding: 15px 12px;
+  padding: 18px 15px;
   display: flex;
   position: relative;
   flex-direction: column;
   justify-content: flex-start;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   flex: 1;
 
   &-header {
@@ -233,11 +279,37 @@ $color-primary: #4700f1; // Define the variable directly
 }
 
 .logo {
-  min-width: 35px;
-  width: 35px;
-  height: 35px;
-  border-radius: 8px;
-  margin-right: 10px;
+  min-width: 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  margin-right: 12px;
   object-fit: cover;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+@media (max-width: 768px) {
+  .website-item {
+    .wrap {
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
+    }
+    
+    .info {
+      padding: 15px 12px;
+    }
+    
+    .logo {
+      min-width: 38px;
+      width: 38px;
+      height: 38px;
+    }
+  }
 }
 </style> 

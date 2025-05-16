@@ -1,90 +1,181 @@
 <template>
-  <div>
+  <div class="nav-detail-page">
+    <!-- Header -->
     <div class="page-header">
       <div class="container header-container">
         <router-link to="/" class="back-button">
-          <i class="el-icon-arrow-left"></i> 返回首页
+          <i class="el-icon-arrow-left"></i>
+          <span>返回首页</span>
         </router-link>
-        <h2 class="page-title">网站详情</h2>
+        <h2 class="page-title">
+          <i class="el-icon-collection"></i>
+          网站详情
+        </h2>
       </div>
     </div>
-    <div class="background-gradient"></div>
-    <div class="container main-container" v-loading="loading">
-      <el-row :gutter="25" class="site-info">
-        <el-col class="item" :md="6" :xs="24">
-          <div class="left">
-            <div class="img-wrap">
-              <el-image :src="detail.logo"/>
-            </div>
-            <div class="tool">
-              <el-tooltip content="访问数" placement="top">
-                <div class="tool-item">
-                  <i class="el-icon-view"></i>
-                  <p>{{ detail.view }}</p>
-                </div>
-              </el-tooltip>
-              <div style="width: 30px"></div>
 
-              <el-tooltip content="点赞数" placement="top">
-                <div :class="`tool-item ${isStar && 'active'}`" @click="handleNavStarFn">
-                  <i class="el-icon-star-off"></i>
-                  <p>{{ detail.star }}</p>
-                </div>
-              </el-tooltip>
+    <!-- Hero Section with Background -->
+    <div class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content" v-loading="loading">
+        <div class="website-profile">
+          <div class="website-logo">
+            <el-image :src="detail.logo" class="logo-image" />
+            <div class="stats">
+              <div class="stat-item">
+                <i class="el-icon-view"></i>
+                <span>{{ detail.view }}</span>
+              </div>
+              <div class="stat-item" :class="{ active: isStar }" @click="handleNavStarFn">
+                <i class="el-icon-star-off"></i>
+                <span>{{ detail.star }}</span>
+              </div>
             </div>
           </div>
-        </el-col>
-        <el-col class="item" :md="10" :xs="24">
-          <div class="content">
-            <h1 class="title">{{ detail.name }}</h1>
-            <p class="desc">{{ detail.desc }}</p>
-            <p class="tags" v-if="detail.tags && detail.tags.length">标签：
-              <span v-for="tag in detail.tags" :key="tag">{{tag}}</span>
-            </p>
-            <p class="author" v-if="detail.authorName">
-              <span class="el-icon-user"></span>
+          <div class="website-info">
+            <h1 class="website-title">{{ detail.name }}</h1>
+            <div class="website-desc">{{ detail.desc }}</div>
+            
+            <div class="tags-container" v-if="detail.tags && detail.tags.length">
+              <span class="tag" v-for="tag in detail.tags" :key="tag">{{ tag }}</span>
+            </div>
+            
+            <div class="author-info" v-if="detail.authorName">
+              <i class="el-icon-user"></i>
               <span>推荐人：</span>
-              <a :href="detail.authorUrl">{{detail.authorName}}</a>
-            </p>
-            <div class="btn-group">
-              <div @click="handleNavClick(detail)" class="btn-link btn-group-item">链接直达<i
-                class="el-icon-arrow-right"></i></div>
+              <a :href="detail.authorUrl" target="_blank">{{ detail.authorName }}</a>
             </div>
-          </div>
-        </el-col>
-        <el-col class="item" :md="8" :xs="24">
-          <div class="right">
-            <div class="app-card">
-              <div class="app-card-header">
-                <h3 class="app-card-title">随机网址</h3>
-                <div class="app-card-extra"><i class="el-icon-refresh" @click="getRandomNavList"></i></div>
-              </div>
-              <div class="app-card-content">
-                <el-row :gutter="10">
-                  <el-col :span="12" v-for="item in randomNavList" :key="item._id">
-                    <router-link class="nav-block" :to="`/nav/${item._id}`">
-                      <img :src="item.logo" alt="" class="nav-logo">
-                      <h4 class="nav-name">{{ item.name }}</h4>
-                    </router-link>
-                  </el-col>
-                </el-row>
-              </div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
 
-      <el-row :gutter="20" class="site-detail">
-        <el-col :span="18">
-          <div class="detail">
-            <h3 class="detail-title">网站描述</h3>
-            <div class="detail-content">{{ detail.detail || detail.desc }}</div>
+            <div class="actions">
+              <button class="action-button" @click="handleNavClick(detail)">
+                <i class="el-icon-link"></i>
+                <span>访问网站</span>
+              </button>
+            </div>
           </div>
-        </el-col>
-        <el-col :span="6">
-          <aside></aside>
-        </el-col>
-      </el-row>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-content" v-loading="loading">
+      <div class="content-grid">
+        <!-- Left Column - Main Content -->
+        <div class="main-column">
+          <!-- Preview Section -->
+          <div class="content-card preview-section">
+            <div class="card-header">
+              <h3><i class="el-icon-picture-outline"></i> 网站预览</h3>
+            </div>
+            <div class="card-body">
+              <div v-if="!detail.screenshots || detail.screenshots.length === 0" class="empty-preview">
+                <div class="empty-icon">
+                  <i class="el-icon-picture"></i>
+                </div>
+                <p>该网站暂无预览图</p>
+                
+                <!-- Features section when no screenshots -->
+                <div class="features-list">
+                  <h4>网站特点</h4>
+                  <div class="features-grid">
+                    <div class="feature-item" v-for="(feature, index) in getFeatures()" :key="index">
+                      <div class="feature-icon">
+                        <i class="el-icon-check"></i>
+                      </div>
+                      <div class="feature-text">{{ feature }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="preview-carousel">
+                <el-carousel :interval="4000" height="400px" indicator-position="outside">
+                  <el-carousel-item v-for="(img, index) in detail.screenshots" :key="index">
+                    <img :src="img" :alt="`${detail.name}截图${index+1}`" class="preview-img">
+                  </el-carousel-item>
+                </el-carousel>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description Section -->
+          <div class="content-card description-section">
+            <div class="card-header">
+              <h3><i class="el-icon-document"></i> 网站描述</h3>
+            </div>
+            <div class="card-body">
+              <div class="description-content">
+                {{ detail.detail || detail.desc }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Sidebar -->
+        <div class="side-column">
+          <!-- Website Info Card -->
+          <div class="content-card website-meta">
+            <div class="card-header">
+              <h3><i class="el-icon-info"></i> 网站信息</h3>
+            </div>
+            <div class="card-body">
+              <div class="meta-list">
+                <div class="meta-item">
+                  <div class="meta-label">
+                    <i class="el-icon-link"></i>
+                    <span>网站链接：</span>
+                  </div>
+                  <div class="meta-value">
+                    <a :href="detail.href" target="_blank" v-if="detail.href">{{ formatUrl(detail.href) }}</a>
+                    <span v-else>暂无</span>
+                  </div>
+                </div>
+                <div class="meta-item">
+                  <div class="meta-label">
+                    <i class="el-icon-view"></i>
+                    <span>访问次数：</span>
+                  </div>
+                  <div class="meta-value">{{ detail.view || 0 }}</div>
+                </div>
+                <div class="meta-item">
+                  <div class="meta-label">
+                    <i class="el-icon-star-off"></i>
+                    <span>点赞数：</span>
+                  </div>
+                  <div class="meta-value">{{ detail.star || 0 }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Related Sites Card -->
+          <div class="content-card related-sites">
+            <div class="card-header">
+              <h3><i class="el-icon-connection"></i> 随机网址</h3>
+              <button class="refresh-button" @click="getRandomNavList" title="刷新列表">
+                <i class="el-icon-refresh"></i>
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="related-list">
+                <router-link 
+                  v-for="item in randomNavList" 
+                  :key="item._id" 
+                  :to="`/nav/${item._id}`" 
+                  class="related-item"
+                >
+                  <div class="related-logo">
+                    <img :src="item.logo" :alt="item.name">
+                  </div>
+                  <div class="related-content">
+                    <div class="related-name">{{ item.name }}</div>
+                    <div class="related-desc">{{ item.desc }}</div>
+                  </div>
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -113,7 +204,6 @@ export default {
       }
     },
     handleNavStarFn() {
-      // 实现点赞功能
       try {
         api.updateNavStar(this.detail._id);
         this.isStar = true;
@@ -125,9 +215,7 @@ export default {
       }
     },
     handleNavClick(nav) {
-      // 实现链接直达功能
       if (nav.href) {
-        // 直接打开链接，无需更新浏览量API调用
         window.open(nav.href, '_blank');
       } else {
         this.$message.warning('该网站没有提供链接');
@@ -139,14 +227,29 @@ export default {
         const res = await api.getNavDetail(id);
         this.detail = res.data.data;
         document.title = `${this.detail.name} - 导航详情`;
-        
-        // 无需更新查看次数
       } catch (error) {
         console.error("获取导航详情失败:", error);
         this.$message.error('获取导航详情失败，请稍后重试');
       } finally {
         this.loading = false;
       }
+    },
+    getFeatures() {
+      if (this.detail.features && Array.isArray(this.detail.features)) {
+        return this.detail.features;
+      }
+      
+      const desc = this.detail.desc || '';
+      if (desc.length > 20) {
+        const sentences = desc.split(/[.,;，。；]/);
+        return sentences.filter(s => s.trim().length > 5).slice(0, 3);
+      }
+      
+      return ['便捷的操作界面', '丰富的功能', '良好的用户体验'];
+    },
+    formatUrl(url) {
+      if (!url) return '';
+      return url.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '');
     }
   },
   created() {
@@ -158,13 +261,52 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// Variables
 $color-primary: var(--color-primary, #4700f1);
-$color-primary-dark: #3600c5; // Darker shade as a fixed value
+$color-primary-dark: #3600c5;
+$color-primary-light: rgba(71, 0, 241, 0.08);
+$color-gray-100: #f8f9fa;
+$color-gray-200: #e9ecef;
+$color-gray-300: #dee2e6;
+$color-gray-400: #ced4da;
+$color-gray-500: #adb5bd;
+$color-gray-600: #6c757d;
+$color-gray-700: #495057;
+$color-gray-800: #343a40;
+$color-gray-900: #212529;
+$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
 
+// Base Styles
+.nav-detail-page {
+  background-color: $color-gray-100;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// Header
 .page-header {
   background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px 0;
+  box-shadow: $shadow-sm;
+  padding: 16px 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -174,430 +316,691 @@ $color-primary-dark: #3600c5; // Darker shade as a fixed value
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 .back-button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   color: $color-primary;
-  text-decoration: none;
+  font-size: 15px;
   font-weight: 500;
-  transition: all 0.3s ease;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: $radius-md;
+  background-color: $color-primary-light;
+  transition: all $transition-normal;
+  
+  i {
+    margin-right: 8px;
+    font-size: 16px;
+  }
   
   &:hover {
     transform: translateX(-3px);
-  }
-  
-  i {
-    margin-right: 5px;
+    background-color: rgba(71, 0, 241, 0.12);
   }
 }
 
 .page-title {
+  display: flex;
+  align-items: center;
   margin: 0;
   font-size: 18px;
-  color: #333;
+  font-weight: 600;
+  color: $color-gray-800;
+  
+  i {
+    margin-right: 10px;
+    color: $color-primary;
+  }
 }
 
-.background-gradient {
+// Hero Section
+.hero-section {
+  position: relative;
+  padding: 80px 0 40px;
+  background: linear-gradient(135deg, #5433FF 0%, #20BDFF 50%, #A5FECB 100%);
+  color: white;
+  overflow: hidden;
+}
+
+.hero-overlay {
   position: absolute;
+  top: 0;
   left: 0;
   right: 0;
-  height: 300px;
-  top: 60px;
-  background: linear-gradient(135deg, #5433FF 0%, #20BDFF 50%, #A5FECB 100%);
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-  z-index: -1;
-  opacity: 0.8;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
-.main-container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 2rem 15px;
-  animation: slideUp 0.6s ease-out;
+.hero-content {
+  position: relative;
+  z-index: 2;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+.website-profile {
+  display: flex;
+  align-items: flex-start;
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: $radius-lg;
+  padding: 30px;
+  box-shadow: $shadow-lg;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.website-logo {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 40px;
+  
+  .logo-image {
+    width: 120px;
+    height: 120px;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+    margin-bottom: 20px;
+    background-color: white;
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 16px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: $radius-md;
+      cursor: pointer;
+      transition: all $transition-normal;
+      margin: 0 5px;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-3px);
+      }
+      
+      &.active {
+        background-color: rgba(255, 255, 255, 0.4);
+        
+        i, span {
+          color: #ff9500;
+        }
+      }
+      
+      i {
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+      
+      span {
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
   }
 }
 
-.site-info {
-  font-size: 14px;
-  margin-top: 30px;
+.website-info {
+  flex: 1;
+  min-width: 0;
+}
 
-  .left {
-    padding: 30px 20px;
-    background: #fff;
-    border-radius: 12px;
-    position: relative;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.website-title {
+  margin: 0 0 15px;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.website-desc {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  
+  .tag {
+    display: inline-block;
+    padding: 5px 12px;
+    background-color: rgba(255, 255, 255, 0.25);
+    color: white;
+    border-radius: 30px;
+    font-size: 13px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all $transition-fast;
     
     &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      background-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
     }
+  }
+}
 
-    .img-wrap {
-      height: 150px;
+.author-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+  font-size: 14px;
+  opacity: 0.85;
+  
+  i {
+    margin-right: 5px;
+  }
+  
+  span {
+    margin-right: 5px;
+  }
+  
+  a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.7);
+    
+    &:hover {
+      border-bottom-style: solid;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  
+  .action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 25px;
+    background-color: white;
+    color: $color-primary;
+    border: none;
+    border-radius: $radius-md;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all $transition-normal;
+    box-shadow: $shadow-md;
+    
+    i {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $shadow-lg;
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  margin-top: -20px;
+  padding-bottom: 60px;
+  position: relative;
+  z-index: 3;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  grid-gap: 25px;
+}
+
+.content-card {
+  background-color: white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: all $transition-normal;
+  margin-bottom: 25px;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-5px);
+  }
+  
+  .card-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid $color-gray-200;
+    
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: $color-gray-800;
+      display: flex;
+      align-items: center;
+      
+      i {
+        margin-right: 10px;
+        color: $color-primary;
+        font-size: 18px;
+      }
+    }
+  }
+  
+  .card-body {
+    padding: 25px;
+  }
+}
+
+// Preview Section
+.empty-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: $color-primary-light;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    
+    i {
+      font-size: 32px;
+      color: $color-primary;
+    }
+  }
+  
+  p {
+    font-size: 16px;
+    color: $color-gray-600;
+    margin-bottom: 30px;
+  }
+}
+
+.features-list {
+  width: 100%;
+  max-width: 800px;
+  
+  h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: $color-gray-800;
+    text-align: center;
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 20px;
+  
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    background-color: $color-gray-100;
+    border-radius: $radius-md;
+    transition: all $transition-fast;
+    
+    &:hover {
+      background-color: $color-primary-light;
+      transform: translateY(-3px);
+    }
+    
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .el-image {
-      margin-bottom: 40px;
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
+      margin-right: 12px;
+      flex-shrink: 0;
+      box-shadow: $shadow-sm;
       
-      &:hover {
-        transform: scale(1.05);
-      }
-
-      img {
-        width: 100%;
+      i {
+        color: $color-primary;
+        font-size: 16px;
       }
     }
+    
+    .feature-text {
+      font-size: 14px;
+      color: $color-gray-800;
+      line-height: 1.5;
+    }
+  }
+}
 
-    .tool {
-      position: absolute;
-      bottom: 20px;
-      left: calc(50% - 65px);
+.preview-carousel {
+  .preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color: $color-gray-100;
+  }
+}
+
+// Description Section
+.description-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: $color-gray-700;
+}
+
+// Website Meta
+.meta-list {
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    border-bottom: 1px solid $color-gray-200;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .meta-label {
       display: flex;
-
-      p {
-        margin: 0;
-      }
-
+      align-items: center;
+      margin-bottom: 8px;
+      color: $color-gray-600;
+      font-size: 14px;
+      
       i {
-        padding-right: 0;
+        margin-right: 8px;
+        color: $color-primary;
       }
-
-      &-item {
-        background: #f0f1f4;
-        font-size: 12px;
-        cursor: pointer;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 50px;
-        height: 50px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        color: #999;
-        transition: all 0.3s ease;
+    }
+    
+    .meta-value {
+      font-size: 15px;
+      color: $color-gray-800;
+      word-break: break-all;
+      
+      a {
+        color: $color-primary;
+        text-decoration: none;
         
         &:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        &.active {
-          color: $color-primary;
-          background: rgba(71, 0, 241, 0.1);
+          text-decoration: underline;
         }
       }
     }
   }
+}
 
-  .content {
-    padding: 25px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+// Related Sites Card
+.related-sites {
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .refresh-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background-color: $color-primary-light;
+      border: none;
+      cursor: pointer;
+      transition: all $transition-normal;
+      
+      i {
+        color: $color-primary;
+        font-size: 16px;
+      }
+      
+      &:hover {
+        background-color: rgba(71, 0, 241, 0.15);
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+.related-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+  margin-top: 10px;
+  
+  .related-item {
+    display: flex;
+    align-items: flex-start;
+    text-decoration: none;
+    padding: 15px;
+    border-radius: $radius-md;
+    background-color: $color-gray-100;
+    border: 1px solid transparent;
+    transition: all $transition-normal;
     height: 100%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
     
     &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      background-color: white;
+      transform: translateY(-3px);
+      border-color: $color-gray-300;
+      box-shadow: $shadow-md;
+      
+      .related-name {
+        color: $color-primary;
+      }
     }
-  }
-
-  .title {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    position: relative;
     
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 0;
-      width: 50px;
-      height: 3px;
-      background: $color-primary;
-      border-radius: 2px;
+    .related-logo {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      border-radius: $radius-md;
+      overflow: hidden;
+      margin-right: 14px;
+      background-color: white;
+      box-shadow: $shadow-sm;
+      border: 1px solid $color-gray-200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      img {
+        width: 90%;
+        height: 90%;
+        object-fit: contain;
+      }
+    }
+    
+    .related-content {
+      flex: 1;
+      min-width: 0;
+      width: calc(100% - 56px);
+      overflow: hidden;
+      padding-top: 2px;
+    }
+    
+    .related-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: $color-gray-800;
+      margin-bottom: 6px;
+      transition: all $transition-fast;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+      display: block;
+    }
+    
+    .related-desc {
+      font-size: 12px;
+      color: $color-gray-600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      line-height: 1.4;
+      max-height: 1.4em;
+      width: 100%;
     }
   }
+}
 
-  .desc {
-    font-size: 15px;
-    margin-bottom: 20px;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    overflow: hidden;
-    color: #666;
-    line-height: 1.6;
+.content-card.related-sites {
+  .card-body {
+    padding: 20px 22px 25px;
+  }
+}
+
+// Responsive
+@media (max-width: $breakpoint-lg) {
+  .content-grid {
+    grid-template-columns: 1fr;
   }
   
-  .tags {
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #666;
+  .side-column {
+    max-width: 100%;
+  }
+  
+  .related-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .website-profile {
+    flex-direction: column;
+  }
+  
+  .website-logo {
+    margin-right: 0;
+    margin-bottom: 30px;
+    width: 100%;
     
-    span {
-      display: inline-block;
-      background: rgba(71, 0, 241, 0.08);
-      color: $color-primary;
-      padding: 3px 10px;
-      margin-right: 8px;
-      margin-bottom: 5px;
-      border-radius: 20px;
+    .logo-image {
+      width: 100px;
+      height: 100px;
+    }
+  }
+  
+  .hero-section {
+    padding: 60px 0 30px;
+  }
+  
+  .website-title {
+    font-size: 26px;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .related-list {
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 15px;
+  }
+  
+  .back-button span {
+    display: none;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .hero-content {
+    padding: 0 15px;
+  }
+  
+  .website-profile {
+    padding: 20px;
+  }
+  
+  .card-header, .card-body {
+    padding: 15px;
+  }
+  
+  .meta-list .meta-item {
+    flex-direction: column;
+  }
+  
+  .related-list {
+    grid-template-columns: 1fr;
+    grid-gap: 12px;
+  }
+  
+  .related-item {
+    padding: 12px;
+    
+    .related-logo {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      margin-right: 12px;
+    }
+    
+    .related-content {
+      width: calc(100% - 52px);
+    }
+    
+    .related-name {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    
+    .related-desc {
       font-size: 12px;
     }
   }
   
-  .author {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #666;
-    
-    a {
-      color: $color-primary;
-      text-decoration: none;
-      
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .btn-group {
-    display: flex;
-    margin-top: 20px;
-
-    &-item {
-      background: $color-primary;
-      color: #fff;
-      padding: 10px 20px;
-      margin-right: 15px;
-      display: flex;
-      align-items: center;
-      border-radius: 6px;
-      transition: all .3s;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(71, 0, 241, 0.25);
-
-      &:hover {
-        background: $color-primary-dark;
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(71, 0, 241, 0.35);
-      }
-    }
-
-    i {
-      color: #fff;
-      font-size: 14px;
-      margin-left: 10px;
-    }
-  }
-  
-  .app-card {
-    border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    height: 100%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    &-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #f0f0f0;
-      padding-bottom: 15px;
-    }
-    
-    &-title {
-      margin: 0;
-      font-size: 16px;
-      position: relative;
-      padding-left: 12px;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 16px;
-        background-color: $color-primary;
-        border-radius: 2px;
-      }
-    }
-    
-    &-extra {
-      cursor: pointer;
-      color: #999;
-      transition: all 0.3s ease;
-      
-      &:hover {
-        color: $color-primary;
-        transform: rotate(180deg);
-      }
-    }
-    
-    .nav-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 15px;
-      padding: 12px 8px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #333;
-      transition: all 0.3s ease;
-      
-      &:hover {
-        background: rgba(71, 0, 241, 0.05);
-        transform: translateY(-3px);
-      }
-      
-      .nav-logo {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        margin-bottom: 8px;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-        
-        &:hover {
-          transform: scale(1.1);
-        }
-      }
-      
-      .nav-name {
-        margin: 0;
-        font-size: 13px;
-        font-weight: 500;
-        text-align: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        width: 100%;
-      }
+  .preview-carousel {
+    :deep(.el-carousel), :deep(.el-carousel__container) {
+      height: 250px !important;
     }
   }
 }
 
-.site-detail {
-  margin-top: 30px;
-  font-size: 15px;
+// Deep selectors for element-UI components
+:deep(.el-carousel__indicators) {
+  bottom: 20px;
+}
 
-  .detail {
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    color: #666;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    &-title {
-      margin-top: 0;
-      margin-bottom: 20px;
-      font-size: 18px;
-      color: #333;
-      position: relative;
-      padding-left: 12px;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 18px;
-        background-color: $color-primary;
-        border-radius: 2px;
-      }
-    }
-    
-    &-content {
-      line-height: 1.8;
-    }
+:deep(.el-carousel__indicator) {
+  button {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  &.is-active button {
+    background-color: $color-primary;
   }
 }
 
-@media (max-width: 768px) {
-  .site-info {
-    .item {
-      margin-bottom: 20px;
-    }
-    
-    .left {
-      padding: 20px 15px;
-      
-      .img-wrap {
-        height: 120px;
-      }
-      
-      .el-image {
-        margin-bottom: 25px;
-      }
-    }
-    
-    .content {
-      padding: 15px 20px;
-    }
-    
-    .title {
-      font-size: 20px;
-    }
-    
-    .btn-group-item {
-      padding: 8px 15px;
-    }
-  }
+:deep(.el-carousel__arrow) {
+  background-color: rgba(71, 0, 241, 0.6);
   
-  .site-detail {
-    margin-top: 20px;
-    
-    .detail {
-      padding: 15px 20px;
-    }
+  &:hover {
+    background-color: rgba(71, 0, 241, 0.8);
   }
 }
 </style> 

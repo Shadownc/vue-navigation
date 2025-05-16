@@ -207,18 +207,22 @@ body {
 .main {
   overflow-y: auto;
   height: calc(100vh - 60px);
-  padding: 20px;
-  background-color: #f5f5f5;
+  padding: 25px 30px;
+  background-color: #f8f9fa;
+  background-image: linear-gradient(to bottom, #f5f7ff 0%, #f8f9fa 100%);
 }
 
 .website-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   color: #333;
   position: relative;
-  padding-left: 15px;
-  margin-top: 30px;
-  margin-bottom: 20px;
+  padding-left: 16px;
+  margin-top: 40px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.5px;
   
   &:before {
     content: "";
@@ -226,19 +230,29 @@ body {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 4px;
-    height: 20px;
+    width: 5px;
+    height: 24px;
     background-color: var(--color-primary, #4700f1);
-    border-radius: 2px;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(71, 0, 241, 0.3);
+  }
+  
+  &:after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, #eee, transparent);
+    margin-left: 15px;
   }
 }
 
 .website-wrapper {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  animation: fadeIn 0.5s ease;
   
   &:first-child {
     .website-title {
-      margin-top: 0;
+      margin-top: 10px;
     }
   }
 }
@@ -255,26 +269,29 @@ body {
   }
 }
 
-.website-wrapper {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* 滚动条样式 */
-.main::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.main::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-.main::-webkit-scrollbar-thumb:hover {
-  background: #999;
+@media (max-width: 768px) {
+  .main {
+    padding: 15px;
+  }
+  
+  .website-title {
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    
+    &:before {
+      height: 20px;
+    }
+  }
+  
+  .website-wrapper {
+    margin-bottom: 30px;
+    
+    &:first-child {
+      .website-title {
+        margin-top: 5px;
+      }
+    }
+  }
 }
 </style> 
